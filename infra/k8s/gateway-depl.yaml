@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: reverseproxy-gateway
+  name: reverseproxy-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: reverseproxy-gateway
+  template:
+    metadata:
+      labels:
+        service: reverseproxy-gateway
+    spec:
+      containers:
+        - image: martinseanhunt/ud-nginx-proxy
+          name: reverseproxy-gateway
+          imagePullPolicy: Always
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reverseproxy-srv
+spec:
+  type: ClusterIP
+  ports:
+    - name: '8080'
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    service: reverseproxy-gateway
